@@ -1,0 +1,8 @@
+# Robots.txt for Vyzorax.com
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap Location
+Sitemap: https://vyzorax.com/sitemap.xml

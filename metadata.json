@@ -1,0 +1,6 @@
+{
+  "name": "Vyzorax - Instagram Downloader",
+  "description": "Fast, free, and SEO-optimized Instagram video, reel, story, and photo downloader tool at Vyzorax.com.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

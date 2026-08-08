@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en" style="background-color: #020617; color-scheme: dark; color: #f8fafc;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- Instant Dark Canvas & Critical SSR Pre-Hydration CSS (Prevents white flash on frame 0) -->
+    <style id="critical-ssr-css">
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #020617 !important;
+        color: #f8fafc !important;
+        color-scheme: dark;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      .ssr-shell {
+        min-height: 100vh;
+        background-color: #020617;
+        color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+      }
+      .ssr-header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background-color: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid #1e293b;
+        height: 64px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      }
+      .ssr-header-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 16px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .ssr-nav-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .ssr-nav {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        background-color: rgba(2, 6, 23, 0.6);
+        padding: 4px;
+        border-radius: 12px;
+        border: 1px solid #1e293b;
+      }
+      @media (min-width: 768px) {
+        .ssr-nav {
+          display: flex !important;
+        }
+        .ssr-mobile-btn {
+          display: none !important;
+        }
+      }
+      .ssr-nav-item {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #94a3b8;
+        text-decoration: none;
+      }
+      .ssr-nav-active {
+        background-color: #f43f5e;
+        color: #ffffff !important;
+        box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.2);
+      }
+      .ssr-mobile-btn {
+        padding: 8px;
+        border-radius: 12px;
+        background-color: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(51, 65, 85, 0.8);
+        color: #e2e8f0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ssr-hero {
+        max-width: 896px;
+        margin: 0 auto;
+        padding: 32px 16px 48px 16px;
+        text-align: center;
+      }
+      .ssr-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 14px;
+        border-radius: 9999px;
+        background-color: rgba(244, 63, 94, 0.1);
+        border: 1px solid rgba(244, 63, 94, 0.2);
+        color: #fb7185;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .ssr-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0 0 16px 0;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+      }
+      @media (min-width: 640px) {
+        .ssr-title { font-size: 48px; }
+      }
+      .ssr-gradient-text {
+        background: linear-gradient(to right, #fbbf24, #f43f5e, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .ssr-desc {
+        font-size: 15px;
+        color: #cbd5e1;
+        max-width: 672px;
+        margin: 0 auto 28px auto;
+        line-height: 1.6;
+      }
+      .ssr-input-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background-color: #0f172a;
+        border: 2px solid #1e293b;
+        border-radius: 16px;
+        padding: 8px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+        max-width: 672px;
+        margin: 0 auto;
+      }
+      .ssr-input {
+        flex: 1;
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: #f8fafc;
+        font-size: 14px;
+        padding: 10px 12px;
+        outline: none;
+      }
+      .ssr-btn-paste {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        color: #e2e8f0;
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 6px;
+        cursor: pointer;
+      }
+      .ssr-btn-download {
+        background: linear-gradient(90deg, #f43f5e, #db2777, #9333ea);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 4px 14px rgba(244,63,94,0.4);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .ssr-samples {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+        font-size: 12px;
+        color: #94a3b8;
+      }
+      .ssr-sample-item {
+        padding: 4px 10px;
+        border-radius: 8px;
+        background-color: #0f172a;
+        border: 1px solid #1e293b;
+      }
+      .ssr-badges {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 28px;
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+      .ssr-badge-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background-color: rgba(15, 23, 42, 0.6);
+        padding: 6px 12px;
+        border-radius: 9999px;
+        border: 1px solid #1e293b;
+      }
+    </style>
+
+    <!-- Polyfill window.fetch property descriptor & suppress fetch setter errors in sandboxed preview -->
+    <script>
+      (function() {
+        try {
+          var _fetch = window.fetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return _fetch; },
+            set: function(fn) { _fetch = fn; },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {}
+        window.addEventListener('error', function(e) {
+          if (e && e.message && e.message.indexOf('Cannot set property fetch') !== -1) {
+            e.preventDefault();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
+
+    <title>Instagram reels downloader online for free - Vyzorax.com</title>
+    
+    <!-- Resource Hints & Performance Connections -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+    <link rel="dns-prefetch" href="https://tpc.googlesyndication.com" />
+    
+    <!-- Google Fonts asynchronously loaded to eliminate render-blocking CSS -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" /></noscript>
+
+    <!-- SEO Core Meta Tags -->
+    <meta name="description" content="Instagram reels downloader online for free. Download Instagram Reels, videos, stories, carousel photos, and MP3 audio in 1080p Full HD without watermark on Vyzorax.com." />
+    <meta name="keywords" content="Instagram reels downloader online for free, reel downloader online, instagram video downloader, instagram reels download, reels download, reels downloader, download video ig, facebook reels download, download instagram reels, save video from instagram, vyzorax" />
+    <meta name="author" content="Vyzorax Team" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://vyzorax.com/" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vyzorax.com/" />
+    <meta property="og:title" content="Instagram reels downloader online for free - Vyzorax.com" />
+    <meta property="og:description" content="Instagram reels downloader online for free. Save Instagram Reels, videos, stories, carousel photos, and MP3 audio in 1080p HD without watermarks." />
+    <meta property="og:image" content="https://vyzorax.com/vyzorax-logo.svg" />
+    <meta property="og:site_name" content="Vyzorax" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://vyzorax.com/" />
+    <meta name="twitter:title" content="Instagram reels downloader online for free - Vyzorax.com" />
+    <meta name="twitter:description" content="Instagram reels downloader online for free. Extract HD Reels, Stories, Photos & MP3 audio instantly." />
+    <meta name="twitter:image" content="https://vyzorax.com/vyzorax-logo.svg" />
+    <meta name="twitter:creator" content="@vyzorax" />
+
+    <!-- JSON-LD Structured Data: Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Vyzorax",
+      "url": "https://vyzorax.com/",
+      "logo": "https://vyzorax.com/vyzorax-logo.svg",
+      "sameAs": [
+        "https://twitter.com/vyzorax",
+        "https://facebook.com/vyzorax"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "support@vyzorax.com",
+        "contactType": "customer service"
+      }
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: WebSite & WebApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Instagram reels downloader online for free - Vyzorax",
+      "url": "https://vyzorax.com/",
+      "description": "Instagram reels downloader online for free. Extract Instagram Reels, Videos, Stories, Carousel photos, and MP3 audio streams without watermarks.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Instagram reels downloader online for free",
+        "Reel downloader online in 1080p Full HD",
+        "Instagram video downloader and IG video saver",
+        "Fast instagram reels downloader for video download",
+        "Save video from instagram and facebook reels download",
+        "Watermark-free high quality reel download"
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://vyzorax.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Reel Downloader Online",
+          "item": "https://vyzorax.com/#reels"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Instagram Video Downloader",
+          "item": "https://vyzorax.com/#video"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Instagram MP3 Converter",
+          "item": "https://vyzorax.com/#mp3"
+        }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is this Instagram reels downloader online for free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Vyzorax.com is a 100% free reel downloader online. You can download instagram reels, videos, stories, and MP3 audio with zero registration and no watermarks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I save video from instagram or perform an instagram reels download?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Copy the link of any Instagram Reel or video, paste it into the Vyzorax reel downloader online search box, and click Extract to download instagram reels in Full HD 1080p."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Vyzorax safe and fast for downloading videos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Vyzorax.com provides high-speed downloads, direct 1080p video extraction, Facebook reels download support, and MP3 audio conversion without registration."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I download video ig on mobile devices?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, you can save video from instagram on iOS Safari, Android Chrome, and desktop browsers effortlessly."
+          }
+        }
+      ]
+    }
+    </script>
+
+  </head>
+  <body style="background-color: #020617; color: #f8fafc; margin: 0; padding: 0;" class="bg-slate-950 text-slate-100 font-sans antialiased m-0 p-0">
+    <div id="root">
+      <!-- Complete Server-Side Pre-rendered Critical UI Shell for Instant Performance & Zero Layout Shift -->
+      <div class="ssr-shell">
+        <!-- Header -->
+        <header class="ssr-header">
+          <div class="ssr-header-container">
+            <!-- Logo on the left -->
+            <div style="display: flex; align-items: center;">
+              <div style="display: inline-flex; align-items: center; gap: 10px; user-select: none;">
+                <svg height="36" viewBox="0 0 335 75" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 36px; width: auto; shrink: 0;">
+                  <defs>
+                    <linearGradient id="vyz-lgrad-shell" x1="15" y1="10" x2="65" y2="70" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#00c6ff" />
+                      <stop offset="50%" stop-color="#2563eb" />
+                      <stop offset="100%" stop-color="#7c3aed" />
+                    </linearGradient>
+                    <linearGradient id="vyz-rgrad-shell" x1="45" y1="35" x2="85" y2="70" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#3b82f6" />
+                      <stop offset="55%" stop-color="#7c3aed" />
+                      <stop offset="100%" stop-color="#6d28d9" />
+                    </linearGradient>
+                    <linearGradient id="vyz-pgrad-shell" x1="55" y1="12" x2="115" y2="12" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#00c6ff" />
+                      <stop offset="100%" stop-color="#38bdf8" />
+                    </linearGradient>
+                  </defs>
+                  <g id="vyzorax-icon-mark">
+                    <rect x="18" y="10" width="22" height="62" rx="11" transform="rotate(-26 29 41)" fill="url(#vyz-lgrad-shell)" />
+                    <rect x="48" y="32" width="20" height="46" rx="10" transform="rotate(26 58 55)" fill="url(#vyz-rgrad-shell)" />
+                    <rect x="46" y="12" width="30" height="15" rx="7.5" fill="url(#vyz-pgrad-shell)" />
+                    <rect x="80" y="13" width="13" height="3.5" rx="1.75" fill="url(#vyz-pgrad-shell)" />
+                    <circle cx="97" cy="14.75" r="1.75" fill="#38bdf8" />
+                    <circle cx="102" cy="14.75" r="1.25" fill="#38bdf8" />
+                    <rect x="78" y="18" width="19" height="3.5" rx="1.75" fill="url(#vyz-pgrad-shell)" />
+                    <rect x="100" y="18" width="5" height="3.5" rx="1.75" fill="#38bdf8" />
+                    <circle cx="109" cy="19.75" r="1.25" fill="#38bdf8" />
+                    <rect x="82" y="23" width="14" height="3.5" rx="1.75" fill="url(#vyz-pgrad-shell)" />
+                    <rect x="99" y="23" width="8" height="3.5" rx="1.75" fill="#38bdf8" />
+                    <rect x="77" y="28" width="17" height="3.5" rx="1.75" fill="url(#vyz-pgrad-shell)" />
+                    <circle cx="98" cy="29.75" r="1.75" fill="#38bdf8" />
+                    <rect x="84" y="33" width="9" height="3.5" rx="1.75" fill="url(#vyz-pgrad-shell)" />
+                    <circle cx="96" cy="34.75" r="1.25" fill="#38bdf8" />
+                  </g>
+                  <g id="vyzorax-text">
+                    <text x="120" y="52" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="38" letter-spacing="4" fill="#FFFFFF">VYZOR</text>
+                    <g transform="translate(250, 20)">
+                      <path d="M 3 32 L 14 0 L 22 0 L 33 32 L 24 32 L 21 23 L 15 23 L 12 32 Z" fill="#FFFFFF" />
+                      <circle cx="18" cy="20" r="3" fill="#00c6ff" />
+                    </g>
+                    <text x="286" y="52" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="38" letter-spacing="4" fill="#FFFFFF">X</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Nav menu and mobile icon grouped on the right hand side with decent margin -->
+            <div class="ssr-nav-group">
+              <nav class="ssr-nav">
+                <span class="ssr-nav-item ssr-nav-active">All Media</span>
+                <span class="ssr-nav-item">Reels</span>
+                <span class="ssr-nav-item">Photos</span>
+                <span class="ssr-nav-item">Stories</span>
+                <span class="ssr-nav-item">Audio MP3</span>
+              </nav>
+
+              <!-- Mobile Menu Icon Button (Visible on mobile screens) -->
+              <button class="ssr-mobile-btn" aria-label="Toggle navigation menu">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Hero Section -->
+        <main style="flex: 1;">
+          <section class="ssr-hero">
+            <div class="ssr-badge">
+              <span>✨ #1 Reel Downloader Online</span>
+            </div>
+            <h1 class="ssr-title">
+              <span class="ssr-gradient-text">Instagram Reels Downloader</span> Online For Free
+            </h1>
+            <p class="ssr-desc">
+              The fast, watermark-free <strong>reel downloader online</strong> and <strong>instagram video downloader</strong>. Perform seamless <strong>instagram reels download</strong>, convert videos to MP3, or <strong>save video from instagram</strong> in 1080p Full HD for all your <strong>reels downloader</strong> needs.
+            </p>
+
+            <!-- Downloader Form Box -->
+            <div class="ssr-input-box">
+              <input type="text" placeholder="Paste Instagram link here (e.g., https://www.instagram.com/reel/...)" readonly class="ssr-input" />
+              <button class="ssr-btn-paste">Paste</button>
+              <button class="ssr-btn-download">Download</button>
+            </div>
+
+            <!-- Test Samples -->
+            <div class="ssr-samples">
+              <span style="font-weight: 600; color: #64748b;">Test Samples:</span>
+              <span class="ssr-sample-item">🎬 Sample Reel (1080p)</span>
+              <span class="ssr-sample-item">📸 Sample Photo Carousel</span>
+              <span class="ssr-sample-item">⚡ Sample Story</span>
+            </div>
+
+            <!-- Badges -->
+            <div class="ssr-badges">
+              <div class="ssr-badge-item">
+                <span style="color: #34d399;">✓</span> <span>No Watermark</span>
+              </div>
+              <div class="ssr-badge-item">
+                <span style="color: #818cf8;">✓</span> <span>100% Safe &amp; Private</span>
+              </div>
+              <div class="ssr-badge-item">
+                <span style="color: #fbbf24;">✓</span> <span>High Speed 1080p Full HD</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Pre-rendered SSR FAQs Section (Eliminates Loading FAQs state completely) -->
+          <section style="padding: 48px 0; background-color: #020617; border-top: 1px solid #1e293b;">
+            <div style="max-width: 896px; margin: 0 auto; padding: 0 16px;">
+              <div style="text-align: center; margin-bottom: 32px;">
+                <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; background-color: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: #818cf8; font-size: 12px; font-weight: 600; margin-bottom: 8px;">
+                  <span>SEO Schema FAQ</span>
+                </div>
+                <h2 style="font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 8px 0;">Frequently Asked Questions</h2>
+                <p style="font-size: 14px; color: #94a3b8; margin: 0;">Everything you need to know about downloading Instagram Reels, Photos, and Stories.</p>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 12px; max-width: 768px; margin: 0 auto;">
+                <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px;">
+                  <div style="font-size: 15px; font-weight: 700; color: #ffffff; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Is this Instagram reels downloader online for free?</span>
+                    <span style="color: #f43f5e; font-size: 18px;">+</span>
+                  </div>
+                  <p style="margin: 12px 0 0 0; font-size: 13px; color: #cbd5e1; line-height: 1.6;">
+                    Yes! Vyzorax.com is a 100% free reel downloader online. You can perform unlimited instagram reels download, save videos, photos, and MP3 audio with zero subscription fees or registration requirements.
+                  </p>
+                </div>
+
+                <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px;">
+                  <div style="font-size: 15px; font-weight: 700; color: #ffffff; display: flex; justify-content: space-between; align-items: center;">
+                    <span>How do I perform an instagram reels download or save video from instagram?</span>
+                    <span style="color: #94a3b8; font-size: 18px;">+</span>
+                  </div>
+                </div>
+
+                <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px;">
+                  <div style="font-size: 15px; font-weight: 700; color: #ffffff; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Is Vyzorax safe and fast for downloading videos?</span>
+                    <span style="color: #94a3b8; font-size: 18px;">+</span>
+                  </div>
+                </div>
+
+                <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px;">
+                  <div style="font-size: 15px; font-weight: 700; color: #ffffff; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Does this reels downloader output watermark-free 1080p HD?</span>
+                    <span style="color: #94a3b8; font-size: 18px;">+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

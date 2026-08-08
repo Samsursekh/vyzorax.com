@@ -1,0 +1,52 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Left Arm Gradient: Cyan -> Blue -> Indigo/Purple -->
+    <linearGradient id="fav-lgrad" x1="15" y1="15" x2="65" y2="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00c6ff" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+
+    <!-- Right Arm Gradient: Purple -> Deep Violet -->
+    <linearGradient id="fav-rgrad" x1="45" y1="50" x2="85" y2="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="55%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#6d28d9" />
+    </linearGradient>
+
+    <!-- Top Bar & Speed Particles Gradient -->
+    <linearGradient id="fav-pgrad" x1="55" y1="20" x2="115" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00c6ff" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(1, 10)">
+    <!-- Left Pill Arm (Angled down) -->
+    <rect x="18" y="18" width="24" height="76" rx="12" transform="rotate(-26 30 56)" fill="url(#fav-lgrad)" />
+
+    <!-- Right Lower Pill Arm (Angled up) -->
+    <rect x="52" y="44" width="22" height="54" rx="11" transform="rotate(26 63 71)" fill="url(#fav-rgrad)" />
+
+    <!-- Top Horizontal Rounded Bar -->
+    <rect x="50" y="20" width="34" height="18" rx="9" fill="url(#fav-pgrad)" />
+
+    <!-- Speed Motion Particles & Dashes (Top Right of V Mark) -->
+    <rect x="88" y="21" width="14" height="4" rx="2" fill="url(#fav-pgrad)" />
+    <circle cx="106" cy="23" r="2" fill="#38bdf8" />
+    <circle cx="112" cy="23" r="1.5" fill="#38bdf8" />
+
+    <rect x="86" y="27" width="22" height="4" rx="2" fill="url(#fav-pgrad)" />
+    <rect x="111" y="27" width="6" height="4" rx="2" fill="#38bdf8" />
+    <circle cx="121" cy="29" r="1.5" fill="#38bdf8" />
+
+    <rect x="90" y="33" width="16" height="4" rx="2" fill="url(#fav-pgrad)" />
+    <rect x="109" y="33" width="9" height="4" rx="2" fill="#38bdf8" />
+
+    <rect x="85" y="39" width="19" height="4" rx="2" fill="url(#fav-pgrad)" />
+    <circle cx="108" cy="41" r="2" fill="#38bdf8" />
+
+    <rect x="92" y="45" width="10" height="4" rx="2" fill="url(#fav-pgrad)" />
+    <circle cx="105" cy="47" r="1.5" fill="#38bdf8" />
+  </g>
+</svg>
