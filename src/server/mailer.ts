@@ -26,6 +26,7 @@ export async function getTransporter(): Promise<nodemailer.Transporter> {
 
   if (user && pass) {
     console.log(`[Vyzorax Mailer] Initializing production SMTP transporter with ${host}:${port} (${user})`);
+
     transporterInstance = nodemailer.createTransport({
       host,
       port,
