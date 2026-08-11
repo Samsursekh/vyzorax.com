@@ -458,6 +458,12 @@ app.get('/api/download', async (req, res) => {
  * Primary: Instagram GraphQL doc_id query
  * Fallbacks: Instagram Embed HTML & oEmbed
  */
+/**
+ * Real Instagram Metadata Extractor
+ * Strategy 1: Instagram GraphQL doc_id query
+ * Strategy 2: Instagram Embed HTML Scraping
+ * Strategy 3: Open-Source Cobalt API Fallback (Bypasses Vercel/Datacenter IP blocks for 100% FREE)
+ */
 async function fetchInstagramLiveMetadata(url: string, shortcode: string) {
   let authorUsername = '';
   let authorFullName = '';
@@ -522,7 +528,6 @@ async function fetchInstagramLiveMetadata(url: string, shortcode: string) {
             durationInSec = Math.round(media.video_duration);
           }
 
-          // Carousel parsing
           if (media.edge_sidecar_to_children?.edges?.length) {
             carouselSlides = media.edge_sidecar_to_children.edges.map((edge: any, index: number) => {
               const node = edge.node;
@@ -591,6 +596,61 @@ async function fetchInstagramLiveMetadata(url: string, shortcode: string) {
       }
     } catch (e) {
       console.error('[Vyzorax] Embed scraping error:', e);
+    }
+  }
+
+  // Strategy 3: Open-Source Cobalt API Fallback (Bypasses Datacenter/Vercel IP Blocks for Free)
+  if (!extractedVideoUrl) {
+    const cobaltInstances = [
+      'https://api.cobalt.tools',
+      'https://cobalt-api.kwiatek.xyz',
+      'https://co.wuk.sh',
+    ];
+
+    for (const instance of cobaltInstances) {
+      try {
+        const cobaltRes = await fetch(`${instance}/`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          },
+          body: JSON.stringify({
+            url: url,
+            videoQuality: 'max',
+          }),
+        });
+
+        if (cobaltRes.ok) {
+          const data = await cobaltRes.json();
+
+          if ((data.status === 'redirect' || data.status === 'tunnel' || data.status === 'stream') && data.url) {
+            extractedVideoUrl = data.url;
+            if (!thumbnailUrl && data.picker?.[0]?.thumb) {
+              thumbnailUrl = data.picker[0].thumb;
+            }
+            break;
+          } else if (data.status === 'picker' && Array.isArray(data.picker) && data.picker.length > 0) {
+            const first = data.picker[0];
+            if (first?.url) {
+              extractedVideoUrl = first.url;
+              thumbnailUrl = first.thumb || thumbnailUrl;
+            }
+            if (data.picker.length > 1) {
+              carouselSlides = data.picker.map((item: any, idx: number) => ({
+                id: `slide_${idx + 1}`,
+                type: item.type === 'video' ? 'video' : 'image',
+                thumbnailUrl: item.thumb || item.url,
+                mediaUrl: item.url,
+              }));
+            }
+            break;
+          }
+        }
+      } catch (e) {
+        console.error(`[Vyzorax] Cobalt API error (${instance}):`, e);
+      }
     }
   }
 
